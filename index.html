@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#ffb703" />
+<title>Braylein's Truck &amp; Dino Tap</title>
+<style>
+  /* ---------- Base / reset ---------- */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Comic Sans MS", "Trebuchet MS", "Baloo", system-ui, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  body {
+    background: linear-gradient(180deg, #7ec8ff 0%, #aee4ff 45%, #ffe08a 70%, #f4c77b 100%);
+    color: #2b2b2b;
+  }
+
+  /* ---------- Animated background ---------- */
+  #bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .cloud {
+    position: absolute;
+    font-size: 64px;
+    opacity: 0.9;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+    will-change: transform;
+  }
+  .cloud.c1 { top: 6%;  animation: drift 38s linear infinite; }
+  .cloud.c2 { top: 14%; font-size: 48px; animation: drift 52s linear infinite; animation-delay: -10s; }
+  .cloud.c3 { top: 22%; font-size: 80px; animation: drift 64s linear infinite; animation-delay: -28s; opacity: 0.8; }
+  .cloud.c4 { top: 3%;  font-size: 40px; animation: drift 46s linear infinite; animation-delay: -18s; opacity: 0.75; }
+  @keyframes drift {
+    from { transform: translateX(-20vw); }
+    to   { transform: translateX(120vw); }
+  }
+  .sun {
+    position: absolute;
+    top: 4%;
+    right: 8%;
+    font-size: 70px;
+    animation: sunspin 40s linear infinite;
+  }
+  @keyframes sunspin { to { transform: rotate(360deg); } }
+  /* desert / dino silhouette hills along the bottom */
+  .hills {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 34%;
+    background:
+      radial-gradient(120% 120% at 20% 100%, #e3a857 0 40%, transparent 41%),
+      radial-gradient(120% 120% at 70% 100%, #d99845 0 45%, transparent 46%),
+      linear-gradient(180deg, #f0b760 0%, #d98e3b 100%);
+  }
+  .dino-sil {
+    position: absolute;
+    bottom: 10%;
+    font-size: 72px;
+    opacity: 0.25;
+    filter: grayscale(0.3);
+  }
+  .dino-sil.d1 { left: 6%;  animation: sway 7s ease-in-out infinite; }
+  .dino-sil.d2 { right: 8%; font-size: 58px; animation: sway 9s ease-in-out infinite reverse; }
+  @keyframes sway {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50%     { transform: translateY(-8px) rotate(2deg); }
+  }
+
+  /* ---------- Screens ---------- */
+  #app {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) 14px env(safe-area-inset-bottom) 14px;
+  }
+  .screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    overflow-y: auto;
+  }
+  .screen.active { display: flex; }
+
+  h1 {
+    font-size: clamp(28px, 8vw, 44px);
+    margin: 10px 0 4px;
+    color: #d62828;
+    text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.12);
+    line-height: 1.05;
+  }
+  .subtitle { font-size: 20px; margin: 0 0 14px; color: #3a5a40; font-weight: bold; }
+  p, label, .txt { font-size: 18px; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 18px 26px;
+    margin: 8px 0;
+    min-height: 64px;
+    width: 100%;
+    max-width: 360px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.25), 0 8px 14px rgba(0,0,0,0.2);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+    background: #2a9d8f;
+  }
+  .btn:active {
+    transform: translateY(5px) scale(0.98);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .btn.play   { background: linear-gradient(180deg,#52b788,#2d6a4f); font-size: 30px; min-height: 76px; }
+  .btn.orange { background: linear-gradient(180deg,#ffb703,#fb8500); }
+  .btn.blue   { background: linear-gradient(180deg,#48cae4,#0077b6); }
+  .btn.red    { background: linear-gradient(180deg,#ff6b6b,#c1121f); }
+  .btn.small  { font-size: 18px; min-height: 52px; padding: 12px 18px; max-width: 280px; }
+
+  /* ---------- Name input ---------- */
+  .namewrap { width: 100%; max-width: 360px; margin: 6px 0 4px; }
+  input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 24px;
+    text-align: center;
+    padding: 16px;
+    border: 4px solid #ffb703;
+    border-radius: 20px;
+    background: #fffdf5;
+    color: #2b2b2b;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: #fb8500; }
+
+  /* ---------- HUD ---------- */
+  #hud {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 6px 0 8px;
+  }
+  .hud-box {
+    background: #fffdf5;
+    border: 3px solid #fff;
+    border-radius: 18px;
+    padding: 8px 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    min-width: 92px;
+  }
+  .hud-label { font-size: 15px; font-weight: bold; color: #555; display:block; }
+  .hud-value { font-size: 30px; font-weight: 900; line-height: 1; }
+  #scoreVal { color: #2d6a4f; }
+  #timeVal  { color: #c1121f; }
+  #timeVal.low { animation: pulse 0.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.18);} }
+
+  /* ---------- Game grid ---------- */
+  #grid {
+    width: 100%;
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    margin: 4px 0 8px;
+    min-height: 340px;
+  }
+  .spot {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-radius: 22px;
+    background:
+      radial-gradient(60% 45% at 50% 85%, #8b5a2b 0 60%, #a86b35 61%, transparent 62%),
+      linear-gradient(180deg,#c99860 0%, #a86b35 100%);
+    box-shadow: inset 0 -6px 10px rgba(0,0,0,0.25), 0 4px 8px rgba(0,0,0,0.15);
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .mound {
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 42%;
+    background: radial-gradient(80% 140% at 50% 100%, #6b4423 0 70%, transparent 71%);
+    pointer-events: none;
+  }
+  .popper {
+    position: absolute;
+    left: 50%;
+    bottom: 6%;
+    transform: translateX(-50%) translateY(140%) scale(0.4);
+    font-size: clamp(42px, 13vw, 72px);
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 3px rgba(0,0,0,0.3));
+  }
+  .popper.up {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), opacity 0.15s ease;
+  }
+  .popper.tapped { animation: tappop 0.3s ease; }
+  @keyframes tappop {
+    0% { transform: translateX(-50%) scale(1); }
+    40% { transform: translateX(-50%) scale(1.45) rotate(-8deg); }
+    100% { transform: translateX(-50%) scale(0) rotate(10deg); opacity: 0; }
+  }
+  .popper.shake { animation: shake 0.5s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(-50%) rotate(0); }
+    20% { transform: translateX(-62%) rotate(-12deg); }
+    40% { transform: translateX(-38%) rotate(12deg); }
+    60% { transform: translateX(-58%) rotate(-8deg); }
+    80% { transform: translateX(-42%) rotate(8deg); }
+  }
+  .spot.flashgood { animation: flashgood 0.3s ease; }
+  .spot.flashbad  { animation: flashbad 0.4s ease; }
+  @keyframes flashgood { 50% { box-shadow: inset 0 0 0 6px #52b788, 0 0 18px #52b788; } }
+  @keyframes flashbad  { 50% { box-shadow: inset 0 0 0 6px #ff6b6b, 0 0 18px #ff6b6b; } }
+
+  /* floating +/- score popups */
+  .float {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    font-weight: 900;
+    pointer-events: none;
+    animation: floatup 0.8s ease-out forwards;
+    text-shadow: 0 2px 2px rgba(0,0,0,0.3);
+    z-index: 5;
+  }
+  .float.good { color: #ffde59; }
+  .float.bad  { color: #ff5252; }
+  @keyframes floatup {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to   { opacity: 0; transform: translateX(-50%) translateY(-60px); }
+  }
+
+  /* ---------- End screen ---------- */
+  .bigscore {
+    font-size: 72px;
+    font-weight: 900;
+    color: #2d6a4f;
+    margin: 6px 0;
+    text-shadow: 2px 2px 0 #fff;
+  }
+
+  /* ---------- Leaderboard ---------- */
+  .board-source {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 2px 0 8px;
+    padding: 4px 12px;
+    border-radius: 14px;
+    display: inline-block;
+  }
+  .board-source.online  { background: #d8f3dc; color: #1b4332; }
+  .board-source.offline { background: #ffe5d0; color: #9c4221; }
+  ol.board {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 10px;
+    width: 100%;
+    max-width: 400px;
+  }
+  ol.board li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fffdf5;
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin: 6px 0;
+    font-size: 20px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+  }
+  ol.board li .rank {
+    font-weight: 900;
+    font-size: 22px;
+    width: 40px;
+    text-align: center;
+  }
+  ol.board li:nth-child(1) .rank { color: #ffb703; }
+  ol.board li:nth-child(2) .rank { color: #8d99ae; }
+  ol.board li:nth-child(3) .rank { color: #cd7f32; }
+  ol.board li .nm { flex: 1; text-align: left; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ol.board li .sc { font-weight: 900; color: #2d6a4f; }
+  ol.board li .dt { font-size: 13px; color: #888; }
+  .empty-msg { font-size: 18px; color: #555; margin: 20px 0; }
+
+  /* ---------- Sound toggle ---------- */
+  #soundToggle {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 10px);
+    right: 10px;
+    z-index: 20;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: #fffdf5;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  #soundToggle:active { transform: scale(0.92); }
+
+  /* ---------- Confetti ---------- */
+  #confetti {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    font-size: 30px;
+    will-change: transform, opacity;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    from { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    to   { transform: translateY(110vh) rotate(720deg); opacity: 0.9; }
+  }
+
+  .hint { font-size: 16px; color: #3a5a40; margin: 6px 0; line-height: 1.4; }
+  .legend { font-size: 17px; margin: 6px 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- Animated themed background -->
+<div id="bg" aria-hidden="true">
+  <span class="sun">☀️</span>
+  <span class="cloud c1">☁️</span>
+  <span class="cloud c2">⛅</span>
+  <span class="cloud c3">☁️</span>
+  <span class="cloud c4">🌤️</span>
+  <div class="hills"></div>
+  <span class="dino-sil d1">🦕</span>
+  <span class="dino-sil d2">🦖</span>
+</div>
+
+<button id="soundToggle" aria-label="Toggle sound">🔊</button>
+<div id="confetti" aria-hidden="true"></div>
+
+<div id="app">
+
+  <!-- START SCREEN -->
+  <section id="startScreen" class="screen active">
+    <h1>Braylein's<br>Truck &amp; Dino Tap</h1>
+    <p class="subtitle">🛻 Tap trucks! 🦖 Hug dinos!</p>
+    <div class="namewrap">
+      <label for="nameInput" class="txt">What's your name?</label>
+      <input type="text" id="nameInput" maxlength="14" placeholder="Type your name" autocomplete="off" />
+    </div>
+    <button class="btn play" id="startBtn">▶️ Play!</button>
+    <button class="btn blue" id="toBoardBtn">🏆 Leaderboard</button>
+    <div class="legend">
+      🛻 Truck = <b>+1</b><br>
+      ⭐ Star = <b>+3</b><br>
+      🦖 Dino = friend, <b>−1</b> (don't tap!)
+    </div>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="gameScreen" class="screen">
+    <div id="hud">
+      <div class="hud-box">
+        <span class="hud-label">SCORE</span>
+        <span class="hud-value" id="scoreVal">0</span>
+      </div>
+      <div class="hud-box" style="text-align:center;">
+        <span class="hud-label" id="playerLabel">Player</span>
+      </div>
+      <div class="hud-box">
+        <span class="hud-label">TIME</span>
+        <span class="hud-value" id="timeVal">60</span>
+      </div>
+    </div>
+    <div id="grid"></div>
+  </section>
+
+  <!-- END SCREEN -->
+  <section id="endScreen" class="screen">
+    <h1>⏰ Time's Up!</h1>
+    <p class="subtitle" id="endName">Great job!</p>
+    <p class="txt">Your score:</p>
+    <div class="bigscore" id="finalScore">0</div>
+    <button class="btn play" id="playAgainBtn">🔁 Play Again</button>
+    <button class="btn blue" id="endBoardBtn">🏆 Leaderboard</button>
+    <button class="btn orange small" id="endHomeBtn">🏠 Home</button>
+  </section>
+
+  <!-- LEADERBOARD SCREEN -->
+  <section id="boardScreen" class="screen">
+    <h1>🏆 Leaderboard</h1>
+    <span class="board-source" id="boardSource">Loading…</span>
+    <ol class="board" id="boardList"></ol>
+    <button class="btn play" id="boardHomeBtn">🏠 Back</button>
+    <button class="btn red small" id="clearBoardBtn">🗑️ Clear Board</button>
+  </section>
+
+</div>
+
+<script>
+/* =======================================================================
+   FAMILY SCORES SERVER
+   -----------------------------------------------------------------------
+   Real backend leaderboard integration for the whole family.
+   All network use is confined to this section. Every call is wrapped so
+   that ANY failure or slowness falls back to the offline localStorage
+   board and NEVER blocks or breaks gameplay.
+   ======================================================================= */
+const FAMILY_SERVER = {
+  BASE: "https://games.cardcauldrontcg.com/scores",
+  KEY: "family-games-2026",
+  GAME: "braylein-truck-dino",
+  TIMEOUT_MS: 4000,
+
+  // fetch with a short timeout so we never hang waiting on the network
+  _fetchWithTimeout(url, options) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.TIMEOUT_MS);
+    return fetch(url, Object.assign({}, options, { signal: controller.signal }))
+      .finally(() => clearTimeout(timer));
+  },
+
+  // Submit a score in the background. Resolves to true/false, never throws.
+  async submitScore(name, score) {
+    try {
+      const res = await this._fetchWithTimeout(this.BASE, {
+        method: "POST",
+        headers: {
+          "X-Family-Key": this.KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ game: this.GAME, name: name, score: score })
+      });
+      return res.ok;
+    } catch (e) {
+      return false; // offline / timeout / error — silently ignore
+    }
+  },
+
+  // Read the online board. Resolves to an array of {name,score,date}, or
+  // null if the server could not be reached (caller uses local fallback).
+  async fetchScores() {
+    try {
+      const url = this.BASE + "?game=" + encodeURIComponent(this.GAME);
+      const res = await this._fetchWithTimeout(url, {
+        method: "GET",
+        headers: { "X-Family-Key": this.KEY }
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (!data || !Array.isArray(data.scores)) return null;
+      return data.scores;
+    } catch (e) {
+      return null; // offline / timeout / error
+    }
+  }
+};
+/* ===================== END FAMILY SCORES SERVER ======================== */
+
+
+/* =======================================================================
+   Local storage helpers (offline leaderboard + remembered name + sound)
+   ======================================================================= */
+const LS = {
+  NAME: "btd_name",
+  BOARD: "btd_board",
+  SOUND: "btd_sound",
+
+  getName() { try { return localStorage.getItem(this.NAME) || ""; } catch(e){ return ""; } },
+  setName(n) { try { localStorage.setItem(this.NAME, n); } catch(e){} },
+
+  getBoard() {
+    try {
+      const raw = localStorage.getItem(this.BOARD);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch(e) { return []; }
+  },
+  saveScore(name, score) {
+    const board = this.getBoard();
+    board.push({ name: name, score: score, date: new Date().toISOString() });
+    board.sort((a,b) => b.score - a.score);
+    const top = board.slice(0, 50);
+    try { localStorage.setItem(this.BOARD, JSON.stringify(top)); } catch(e){}
+    return top;
+  },
+  clearBoard() { try { localStorage.removeItem(this.BOARD); } catch(e){} },
+
+  getSound() { try { const v = localStorage.getItem(this.SOUND); return v === null ? true : v === "1"; } catch(e){ return true; } },
+  setSound(on) { try { localStorage.setItem(this.SOUND, on ? "1" : "0"); } catch(e){} }
+};
+
+
+/* =======================================================================
+   Sound effects (WebAudio only — no audio files)
+   ======================================================================= */
+const Sound = {
+  ctx: null,
+  on: true,
+  init() {
+    this.on = LS.getSound();
+    updateSoundButton();
+  },
+  _ensure() {
+    if (!this.ctx) {
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e) { this.ctx = null; }
+    }
+    if (this.ctx && this.ctx.state === "suspended") { this.ctx.resume().catch(()=>{}); }
+    return this.ctx;
+  },
+  _tone(freq, dur, type, startGain, when) {
+    const ctx = this._ensure();
+    if (!ctx) return;
+    const t = (when || ctx.currentTime);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(startGain || 0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur);
+  },
+  pop() {
+    if (!this.on) return;
+    const ctx = this._ensure(); if (!ctx) return;
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(420, t);
+    osc.frequency.exponentialRampToValueAtTime(880, t + 0.1);
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.16);
+  },
+  star() {
+    if (!this.on) return;
+    const ctx = this._ensure(); if (!ctx) return;
+    [660, 880, 1320].forEach((f,i) => this._tone(f, 0.18, "sine", 0.2, ctx.currentTime + i*0.06));
+  },
+  oops() {
+    if (!this.on) return;
+    const ctx = this._ensure(); if (!ctx) return;
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(300, t);
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.25);
+    gain.gain.setValueAtTime(0.18, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.3);
+  },
+  cheer() {
+    if (!this.on) return;
+    const ctx = this._ensure(); if (!ctx) return;
+    const notes = [523, 659, 784, 1047]; // C E G C — happy major arpeggio
+    notes.forEach((f,i) => this._tone(f, 0.3, "triangle", 0.22, ctx.currentTime + i*0.12));
+  }
+};
+
+
+/* =======================================================================
+   Screen navigation
+   ======================================================================= */
+const screens = {
+  start: document.getElementById("startScreen"),
+  game: document.getElementById("gameScreen"),
+  end: document.getElementById("endScreen"),
+  board: document.getElementById("boardScreen")
+};
+function showScreen(name) {
+  Object.values(screens).forEach(s => s.classList.remove("active"));
+  screens[name].classList.add("active");
+}
+
+
+/* =======================================================================
+   Game logic
+   ======================================================================= */
+const GAME_SECONDS = 60;
+const grid = document.getElementById("grid");
+const scoreVal = document.getElementById("scoreVal");
+const timeVal = document.getElementById("timeVal");
+const playerLabel = document.getElementById("playerLabel");
+
+let spots = [];          // the 9 spot elements
+let score = 0;
+let timeLeft = GAME_SECONDS;
+let playerName = "Player";
+let gameTimer = null;    // 1s countdown
+let spawnTimer = null;   // popup spawner
+let activeIndexes = new Set(); // which spots currently have a popper
+let running = false;
+
+// Build the 3x3 grid once
+function buildGrid() {
+  grid.innerHTML = "";
+  spots = [];
+  for (let i = 0; i < 9; i++) {
+    const spot = document.createElement("div");
+    spot.className = "spot";
+    const mound = document.createElement("div");
+    mound.className = "mound";
+    const popper = document.createElement("div");
+    popper.className = "popper";
+    popper.dataset.kind = "";
+    spot.appendChild(mound);
+    spot.appendChild(popper);
+    spot.addEventListener("pointerdown", (e) => onTap(i, e), { passive: true });
+    grid.appendChild(spot);
+    spots.push({ spot, popper, timeout: null });
+  }
+}
+
+function startGame() {
+  playerName = (document.getElementById("nameInput").value || "").trim() || "Player";
+  LS.setName(playerName);
+  playerLabel.textContent = "👋 " + playerName;
+
+  score = 0;
+  timeLeft = GAME_SECONDS;
+  scoreVal.textContent = "0";
+  timeVal.textContent = String(GAME_SECONDS);
+  timeVal.classList.remove("low");
+  activeIndexes.clear();
+
+  // clear any leftover poppers
+  spots.forEach(s => {
+    if (s.timeout) clearTimeout(s.timeout);
+    s.timeout = null;
+    hidePopper(s.popper);
+  });
+
+  running = true;
+  showScreen("game");
+  Sound._ensure(); // unlock audio on this user gesture
+
+  // countdown
+  gameTimer = setInterval(() => {
+    timeLeft--;
+    timeVal.textContent = String(timeLeft);
+    if (timeLeft <= 10) timeVal.classList.add("low");
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+
+  // spawner — schedule the first wave right away
+  scheduleSpawn(500);
+}
+
+function scheduleSpawn(delay) {
+  spawnTimer = setTimeout(() => {
+    if (!running) return;
+    spawnWave();
+    // next wave: gets a touch faster as time runs down
+    const base = 850;
+    const speedUp = Math.max(0, (GAME_SECONDS - timeLeft)) * 6;
+    const next = Math.max(400, base - speedUp) + Math.random() * 350;
+    scheduleSpawn(next);
+  }, delay);
+}
+
+function spawnWave() {
+  // pick one or two free spots
+  const free = [];
+  for (let i = 0; i < 9; i++) if (!activeIndexes.has(i)) free.push(i);
+  if (free.length === 0) return;
+  const count = (Math.random() < 0.45 && free.length >= 2) ? 2 : 1;
+  shuffle(free);
+  for (let k = 0; k < count; k++) {
+    spawnAt(free[k]);
+  }
+}
+
+function spawnAt(i) {
+  const s = spots[i];
+  activeIndexes.add(i);
+  const kind = pickKind();
+  s.popper.textContent = kind.emoji;
+  s.popper.dataset.kind = kind.type;
+  s.popper.dataset.points = kind.points;
+  s.popper.className = "popper"; // reset
+  // force reflow then raise
+  void s.popper.offsetWidth;
+  s.popper.classList.add("up");
+
+  // stay up for ~1s (a little longer for stars so they're catchable)
+  const upTime = kind.type === "star" ? 1200 : 1000;
+  s.timeout = setTimeout(() => {
+    hidePopper(s.popper);
+    activeIndexes.delete(i);
+  }, upTime);
+}
+
+function pickKind() {
+  const r = Math.random();
+  // ~55% trucks, ~35% dinos, ~10% stars
+  if (r < 0.55) {
+    const trucks = ["🛻","🚚","🚙","🛻","🚜"];
+    return { type: "truck", emoji: trucks[Math.floor(Math.random()*trucks.length)], points: 1 };
+  } else if (r < 0.90) {
+    const dinos = ["🦖","🦕"];
+    return { type: "dino", emoji: dinos[Math.floor(Math.random()*dinos.length)], points: -1 };
+  } else {
+    return { type: "star", emoji: "⭐", points: 3 };
+  }
+}
+
+function hidePopper(popper) {
+  popper.classList.remove("up");
+}
+
+function onTap(i, e) {
+  if (!running) return;
+  const s = spots[i];
+  if (!activeIndexes.has(i)) return;        // nothing up here
+  if (s.popper.classList.contains("tapped") || s.popper.classList.contains("shake")) return;
+
+  const kind = s.popper.dataset.kind;
+  const spotEl = s.spot;
+
+  if (kind === "truck" || kind === "star") {
+    const pts = kind === "star" ? 3 : 1;
+    score += pts;
+    scoreVal.textContent = String(score);
+    floatText(spotEl, "+" + pts, "good");
+    spotEl.classList.remove("flashgood"); void spotEl.offsetWidth; spotEl.classList.add("flashgood");
+    s.popper.classList.add("tapped");
+    kind === "star" ? Sound.star() : Sound.pop();
+    // remove after pop animation
+    clearTimeout(s.timeout);
+    setTimeout(() => { activeIndexes.delete(i); hidePopper(s.popper); s.popper.classList.remove("tapped"); }, 300);
+    bump(scoreVal);
+  } else if (kind === "dino") {
+    // dinos are friends — tapping loses a point (never below 0) and it shakes
+    if (score > 0) { score -= 1; scoreVal.textContent = String(score); }
+    floatText(spotEl, "−1", "bad");
+    spotEl.classList.remove("flashbad"); void spotEl.offsetWidth; spotEl.classList.add("flashbad");
+    s.popper.classList.add("shake");
+    Sound.oops();
+    clearTimeout(s.timeout);
+    s.timeout = setTimeout(() => { activeIndexes.delete(i); hidePopper(s.popper); s.popper.classList.remove("shake"); }, 500);
+  }
+}
+
+function bump(el) {
+  el.style.transition = "transform 0.12s ease";
+  el.style.transform = "scale(1.35)";
+  setTimeout(() => { el.style.transform = "scale(1)"; }, 120);
+}
+
+function floatText(spotEl, text, cls) {
+  const f = document.createElement("div");
+  f.className = "float " + cls;
+  f.textContent = text;
+  spotEl.appendChild(f);
+  setTimeout(() => f.remove(), 800);
+}
+
+function endGame() {
+  running = false;
+  clearInterval(gameTimer);
+  clearTimeout(spawnTimer);
+  gameTimer = spawnTimer = null;
+  // clear poppers
+  spots.forEach((s, i) => { if (s.timeout) clearTimeout(s.timeout); hidePopper(s.popper); });
+  activeIndexes.clear();
+
+  // Save locally (always), submit to family server in background (never blocks)
+  LS.saveScore(playerName, score);
+  FAMILY_SERVER.submitScore(playerName, score); // fire-and-forget
+
+  // End screen
+  document.getElementById("endName").textContent = "🎉 Awesome, " + playerName + "!";
+  document.getElementById("finalScore").textContent = String(score);
+  showScreen("end");
+  Sound.cheer();
+  launchConfetti();
+}
+
+
+/* =======================================================================
+   Confetti / star burst
+   ======================================================================= */
+const confettiLayer = document.getElementById("confetti");
+function launchConfetti() {
+  const emojis = ["⭐","🎉","🛻","🦖","🌟","🎊","🚚","🦕","✨"];
+  const n = 40;
+  for (let i = 0; i < n; i++) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    piece.style.left = Math.random() * 100 + "vw";
+    piece.style.fontSize = (20 + Math.random() * 26) + "px";
+    const dur = 1.8 + Math.random() * 1.8;
+    piece.style.animationDuration = dur + "s";
+    piece.style.animationDelay = (Math.random() * 0.5) + "s";
+    confettiLayer.appendChild(piece);
+    setTimeout(() => piece.remove(), (dur + 0.6) * 1000);
+  }
+}
+
+
+/* =======================================================================
+   Leaderboard rendering (server first, local fallback)
+   ======================================================================= */
+const boardList = document.getElementById("boardList");
+const boardSource = document.getElementById("boardSource");
+
+function renderBoard(scores, source) {
+  boardList.innerHTML = "";
+  if (!scores || scores.length === 0) {
+    const li = document.createElement("li");
+    li.innerHTML = '<span class="empty-msg">No scores yet — be the first! 🏁</span>';
+    li.style.justifyContent = "center";
+    boardList.appendChild(li);
+  } else {
+    scores.slice(0, 10).forEach((entry, idx) => {
+      const li = document.createElement("li");
+      const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : (idx + 1) + ".";
+      li.innerHTML =
+        '<span class="rank">' + medal + '</span>' +
+        '<span class="nm"></span>' +
+        '<span class="dt"></span>' +
+        '<span class="sc"></span>';
+      li.querySelector(".nm").textContent = entry.name || "Player";
+      li.querySelector(".sc").textContent = (entry.score != null ? entry.score : 0);
+      li.querySelector(".dt").textContent = formatDate(entry.date);
+      boardList.appendChild(li);
+    });
+  }
+  boardSource.textContent = source === "online" ? "🌐 Family online board" : "📵 Offline (this device)";
+  boardSource.className = "board-source " + (source === "online" ? "online" : "offline");
+}
+
+function formatDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  return (d.getMonth()+1) + "/" + d.getDate();
+}
+
+async function openBoard() {
+  showScreen("board");
+  // Show local immediately so there's never a blank wait, then try online.
+  renderBoard(LS.getBoard(), "offline");
+  const online = await FAMILY_SERVER.fetchScores();
+  if (online) {
+    renderBoard(online, "online");
+  } else {
+    renderBoard(LS.getBoard(), "offline");
+  }
+}
+
+
+/* =======================================================================
+   Helpers
+   ======================================================================= */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+
+/* =======================================================================
+   Sound toggle button
+   ======================================================================= */
+const soundToggle = document.getElementById("soundToggle");
+function updateSoundButton() {
+  soundToggle.textContent = Sound.on ? "🔊" : "🔇";
+}
+soundToggle.addEventListener("click", () => {
+  Sound.on = !Sound.on;
+  LS.setSound(Sound.on);
+  updateSoundButton();
+  if (Sound.on) { Sound._ensure(); Sound.pop(); }
+});
+
+
+/* =======================================================================
+   Wire up buttons
+   ======================================================================= */
+document.getElementById("startBtn").addEventListener("click", startGame);
+document.getElementById("playAgainBtn").addEventListener("click", startGame);
+document.getElementById("toBoardBtn").addEventListener("click", openBoard);
+document.getElementById("endBoardBtn").addEventListener("click", openBoard);
+document.getElementById("boardHomeBtn").addEventListener("click", () => showScreen("start"));
+document.getElementById("endHomeBtn").addEventListener("click", () => showScreen("start"));
+
+document.getElementById("clearBoardBtn").addEventListener("click", () => {
+  if (confirm("Clear the local scores on THIS device? (The family online board is not affected.)")) {
+    LS.clearBoard();
+    renderBoard([], "offline");
+  }
+});
+
+
+/* =======================================================================
+   Init
+   ======================================================================= */
+(function init() {
+  buildGrid();
+  Sound.init();
+  const saved = LS.getName();
+  if (saved) document.getElementById("nameInput").value = saved;
+  showScreen("start");
+})();
+</script>
+</body>
+</html>
