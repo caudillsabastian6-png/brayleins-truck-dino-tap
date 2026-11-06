@@ -363,6 +363,166 @@
 
   .hint { font-size: 16px; color: #3a5a40; margin: 6px 0; line-height: 1.4; }
   .legend { font-size: 17px; margin: 6px 0; line-height: 1.5; }
+
+  /* ---------- Coins badge ---------- */
+  .coins-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fffdf5;
+    border: 3px solid #ffb703;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 22px;
+    font-weight: 900;
+    color: #b8860b;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    margin: 4px 0 8px;
+  }
+
+  /* ---------- Level select ---------- */
+  .level-list, .shop-list, .rewards-list {
+    width: 100%;
+    max-width: 400px;
+    margin: 6px 0 10px;
+  }
+  .level-btn {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: inherit;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 14px 18px;
+    margin: 8px 0;
+    min-height: 64px;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.22), 0 7px 12px rgba(0,0,0,0.18);
+    background: linear-gradient(180deg,#52b788,#2d6a4f);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+  .level-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.22); }
+  .level-btn .lv-main { display: flex; flex-direction: column; }
+  .level-btn .lv-name { font-size: 22px; }
+  .level-btn .lv-sub { font-size: 15px; opacity: 0.92; font-weight: bold; }
+  .level-btn .lv-icon { font-size: 30px; }
+  .level-btn:disabled, .btn:disabled, .shop-item button:disabled {
+    filter: grayscale(0.8);
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .level-btn.locked { background: linear-gradient(180deg,#9aa0a6,#5f6368); }
+
+  /* ---------- Shop / Rewards items ---------- */
+  .shop-item, .reward-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fffdf5;
+    border: 3px solid #fff;
+    border-radius: 18px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  .shop-item .si-preview, .reward-item .ri-preview { font-size: 34px; width: 46px; text-align: center; }
+  .shop-item .si-info, .reward-item .ri-info { flex: 1; text-align: left; }
+  .shop-item .si-name, .reward-item .ri-name { font-size: 18px; font-weight: bold; }
+  .shop-item .si-price { font-size: 15px; color: #b8860b; font-weight: bold; }
+  .shop-item button, .reward-item button {
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 14px;
+    min-height: 46px;
+    min-width: 92px;
+    cursor: pointer;
+    background: linear-gradient(180deg,#ffb703,#fb8500);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+  }
+  .shop-item button.owned, .reward-item button.equipped {
+    background: linear-gradient(180deg,#9aa0a6,#5f6368);
+    cursor: default;
+  }
+  .reward-item button.equip { background: linear-gradient(180deg,#48cae4,#0077b6); }
+  .shop-cat-title, .rewards-cat-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: #3a5a40;
+    margin: 12px 0 2px;
+    text-align: left;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  /* ---------- Power-ups (in-round) ---------- */
+  #powerups {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 0 0 6px;
+  }
+  .power-btn {
+    flex: 1;
+    max-width: 180px;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 15px;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 8px 10px;
+    min-height: 50px;
+    cursor: pointer;
+    background: linear-gradient(180deg,#9d4edd,#5a189a);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+    line-height: 1.15;
+  }
+  .power-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+  .power-btn:disabled { filter: grayscale(0.8); opacity: 0.5; cursor: not-allowed; }
+  .power-btn .pw-price { display: block; font-size: 13px; opacity: 0.95; }
+
+  /* ---------- Scenes (themed backgrounds) ---------- */
+  /* Default = desert (no class needed, matches original look) */
+  body.scene-jungle { background: linear-gradient(180deg,#7ec8ff 0%,#bfe6c4 45%,#6fae5a 72%,#3d7a2e 100%); }
+  body.scene-jungle .hills {
+    background:
+      radial-gradient(120% 120% at 20% 100%, #4a8c3a 0 40%, transparent 41%),
+      radial-gradient(120% 120% at 70% 100%, #357a2a 0 45%, transparent 46%),
+      linear-gradient(180deg,#5aa24a 0%,#2f6a23 100%);
+  }
+  body.scene-jungle .sun { filter: hue-rotate(-20deg); }
+  body.scene-jungle .dino-sil { opacity: 0.35; filter: grayscale(0) saturate(1.3); }
+
+  body.scene-volcano { background: linear-gradient(180deg,#5a3a4a 0%,#8a4a3a 42%,#c15a2a 72%,#e03b1b 100%); color:#2b2b2b; }
+  body.scene-volcano .hills {
+    background:
+      radial-gradient(120% 120% at 25% 100%, #6b2b1b 0 42%, transparent 43%),
+      radial-gradient(120% 120% at 72% 100%, #8a2b1b 0 46%, transparent 47%),
+      linear-gradient(180deg,#a83a1b 0%,#5a1b0b 100%);
+  }
+  body.scene-volcano .sun { filter: hue-rotate(-30deg) saturate(1.6) brightness(1.1); }
+  body.scene-volcano .cloud { filter: grayscale(0.5) brightness(0.7); }
+
+  body.scene-snow { background: linear-gradient(180deg,#bfe0ff 0%,#dff0ff 45%,#eef6ff 72%,#ffffff 100%); }
+  body.scene-snow .hills {
+    background:
+      radial-gradient(120% 120% at 20% 100%, #e8f2ff 0 40%, transparent 41%),
+      radial-gradient(120% 120% at 70% 100%, #d4e6f7 0 45%, transparent 46%),
+      linear-gradient(180deg,#f4faff 0%,#cfe2f2 100%);
+  }
+  body.scene-snow .sun { filter: brightness(1.15) saturate(0.7); }
+  body.scene-snow .dino-sil { filter: grayscale(0.6) brightness(1.2); opacity: 0.2; }
 </style>
 </head>
 <body>
@@ -388,17 +548,47 @@
   <section id="startScreen" class="screen active">
     <h1>Braylein's<br>Truck &amp; Dino Tap</h1>
     <p class="subtitle">🛻 Tap trucks! 🦖 Hug dinos!</p>
+    <div class="coins-badge" id="startCoins">🪙 0</div>
     <div class="namewrap">
       <label for="nameInput" class="txt">What's your name?</label>
       <input type="text" id="nameInput" maxlength="14" placeholder="Type your name" autocomplete="off" />
     </div>
     <button class="btn play" id="startBtn">▶️ Play!</button>
+    <button class="btn orange" id="toShopBtn">🛒 Shop</button>
+    <button class="btn blue" id="toRewardsBtn">🎁 Rewards</button>
     <button class="btn blue" id="toBoardBtn">🏆 Leaderboard</button>
     <div class="legend">
       🛻 Truck = <b>+1</b><br>
       ⭐ Star = <b>+3</b><br>
       🦖 Dino = friend, <b>−1</b> (don't tap!)
     </div>
+  </section>
+
+  <!-- LEVEL SELECT SCREEN -->
+  <section id="levelScreen" class="screen">
+    <h1>🗺️ Pick a Level</h1>
+    <div class="coins-badge" id="levelCoins">🪙 0</div>
+    <div class="level-list" id="levelList"></div>
+    <button class="btn orange small" id="levelHomeBtn">🏠 Back</button>
+  </section>
+
+  <!-- SHOP SCREEN -->
+  <section id="shopScreen" class="screen">
+    <h1>🛒 Shop</h1>
+    <div class="coins-badge" id="shopCoins">🪙 0</div>
+    <p class="hint">Coins are earned by playing. Buy fun stuff here!</p>
+    <div class="shop-list" id="shopList"></div>
+    <button class="btn blue small" id="shopRewardsBtn">🎁 Rewards</button>
+    <button class="btn orange small" id="shopHomeBtn">🏠 Back</button>
+  </section>
+
+  <!-- REWARDS SCREEN -->
+  <section id="rewardsScreen" class="screen">
+    <h1>🎁 Rewards</h1>
+    <p class="hint">Equip the things you own. Tap a horn to hear it!</p>
+    <div class="rewards-list" id="rewardsList"></div>
+    <button class="btn orange small" id="rewardsShopBtn">🛒 Shop</button>
+    <button class="btn blue small" id="rewardsHomeBtn">🏠 Back</button>
   </section>
 
   <!-- GAME SCREEN -->
@@ -416,6 +606,10 @@
         <span class="hud-value" id="timeVal">60</span>
       </div>
     </div>
+    <div id="powerups">
+      <button class="power-btn" id="slowMoBtn">🐢 Slow-Mo<span class="pw-price" id="slowMoPrice">🪙 8</span></button>
+      <button class="power-btn" id="extraTimeBtn">⏱️ +10s<span class="pw-price" id="extraTimePrice">🪙 6</span></button>
+    </div>
     <div id="grid"></div>
   </section>
 
@@ -425,7 +619,9 @@
     <p class="subtitle" id="endName">Great job!</p>
     <p class="txt">Your score:</p>
     <div class="bigscore" id="finalScore">0</div>
+    <p class="hint" id="endExtra"></p>
     <button class="btn play" id="playAgainBtn">🔁 Play Again</button>
+    <button class="btn orange" id="endLevelsBtn">🗺️ Levels</button>
     <button class="btn blue" id="endBoardBtn">🏆 Leaderboard</button>
     <button class="btn orange small" id="endHomeBtn">🏠 Home</button>
   </section>
@@ -531,7 +727,53 @@ const LS = {
   clearBoard() { try { localStorage.removeItem(this.BOARD); } catch(e){} },
 
   getSound() { try { const v = localStorage.getItem(this.SOUND); return v === null ? true : v === "1"; } catch(e){ return true; } },
-  setSound(on) { try { localStorage.setItem(this.SOUND, on ? "1" : "0"); } catch(e){} }
+  setSound(on) { try { localStorage.setItem(this.SOUND, on ? "1" : "0"); } catch(e){} },
+
+  // ---- Per-player progress (coins, levels, rewards) ----
+  PLAYER_PREFIX: "btd_player_",
+  _playerKey(name) {
+    const safe = String(name || "Player").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "player";
+    return this.PLAYER_PREFIX + safe;
+  },
+  _defaultProgress() {
+    return {
+      coins: 0,
+      unlockedLevels: 1,
+      levelBest: {},
+      owned: { trucks: ["classic"], scenes: ["desert"], horns: ["basic"] },
+      equipped: { truck: "classic", scene: "desert", horn: "basic" }
+    };
+  },
+  getProgress(name) {
+    const def = this._defaultProgress();
+    try {
+      const raw = localStorage.getItem(this._playerKey(name));
+      if (!raw) return def;
+      const p = JSON.parse(raw);
+      if (!p || typeof p !== "object") return def;
+      // merge defensively so a corrupt / partial object never breaks the game
+      const owned = (p.owned && typeof p.owned === "object") ? p.owned : {};
+      const equipped = (p.equipped && typeof p.equipped === "object") ? p.equipped : {};
+      return {
+        coins: Number.isFinite(p.coins) ? Math.max(0, Math.floor(p.coins)) : 0,
+        unlockedLevels: Number.isFinite(p.unlockedLevels) ? Math.max(1, Math.floor(p.unlockedLevels)) : 1,
+        levelBest: (p.levelBest && typeof p.levelBest === "object") ? p.levelBest : {},
+        owned: {
+          trucks: Array.isArray(owned.trucks) && owned.trucks.length ? owned.trucks : ["classic"],
+          scenes: Array.isArray(owned.scenes) && owned.scenes.length ? owned.scenes : ["desert"],
+          horns: Array.isArray(owned.horns) && owned.horns.length ? owned.horns : ["basic"]
+        },
+        equipped: {
+          truck: equipped.truck || "classic",
+          scene: equipped.scene || "desert",
+          horn: equipped.horn || "basic"
+        }
+      };
+    } catch(e) { return def; }
+  },
+  saveProgress(name, obj) {
+    try { localStorage.setItem(this._playerKey(name), JSON.stringify(obj)); } catch(e){}
+  }
 };
 
 
@@ -605,6 +847,40 @@ const Sound = {
     const ctx = this._ensure(); if (!ctx) return;
     const notes = [523, 659, 784, 1047]; // C E G C — happy major arpeggio
     notes.forEach((f,i) => this._tone(f, 0.3, "triangle", 0.22, ctx.currentTime + i*0.12));
+  },
+  // Synthesized horn variations (no audio files). id picks the shape.
+  horn(id) {
+    if (!this.on) return;
+    const ctx = this._ensure(); if (!ctx) return;
+    const t = ctx.currentTime;
+    switch (id) {
+      case "truck": { // deep two-tone air horn
+        this._tone(196, 0.32, "sawtooth", 0.22, t);
+        this._tone(262, 0.34, "sawtooth", 0.18, t + 0.02);
+        break;
+      }
+      case "clown": { // silly rising squeeze honk
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(300, t);
+        osc.frequency.exponentialRampToValueAtTime(760, t + 0.18);
+        gain.gain.setValueAtTime(0.2, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.27);
+        break;
+      }
+      case "train": { // chugging whistle chord
+        [330, 440, 554].forEach((f) => this._tone(f, 0.45, "triangle", 0.16, t));
+        break;
+      }
+      case "basic":
+      default: { // friendly beep-beep
+        this._tone(520, 0.1, "square", 0.2, t);
+        this._tone(520, 0.1, "square", 0.2, t + 0.14);
+        break;
+      }
+    }
   }
 };
 
@@ -614,9 +890,12 @@ const Sound = {
    ======================================================================= */
 const screens = {
   start: document.getElementById("startScreen"),
+  level: document.getElementById("levelScreen"),
   game: document.getElementById("gameScreen"),
   end: document.getElementById("endScreen"),
-  board: document.getElementById("boardScreen")
+  board: document.getElementById("boardScreen"),
+  shop: document.getElementById("shopScreen"),
+  rewards: document.getElementById("rewardsScreen")
 };
 function showScreen(name) {
   Object.values(screens).forEach(s => s.classList.remove("active"));
@@ -633,6 +912,44 @@ const scoreVal = document.getElementById("scoreVal");
 const timeVal = document.getElementById("timeVal");
 const playerLabel = document.getElementById("playerLabel");
 
+/* ---- Level configuration: 5 levels of growing difficulty ----
+   Level 1 is gentle for a young child; later levels get faster, with
+   shorter up-times, more dinos, fewer stars, and higher targets. */
+const LEVELS = [
+  { id: 1, name: "Level 1", targetScore: 10, spawnBase: 1100, upTimeTruck: 1400, upTimeStar: 1700, dinoChance: 0.25, starChance: 0.14, doubleSpawnChance: 0.20 },
+  { id: 2, name: "Level 2", targetScore: 15, spawnBase: 950,  upTimeTruck: 1200, upTimeStar: 1450, dinoChance: 0.32, starChance: 0.11, doubleSpawnChance: 0.32 },
+  { id: 3, name: "Level 3", targetScore: 22, spawnBase: 820,  upTimeTruck: 1050, upTimeStar: 1250, dinoChance: 0.40, starChance: 0.09, doubleSpawnChance: 0.45 },
+  { id: 4, name: "Level 4", targetScore: 30, spawnBase: 700,  upTimeTruck: 900,  upTimeStar: 1100, dinoChance: 0.47, starChance: 0.07, doubleSpawnChance: 0.55 },
+  { id: 5, name: "Level 5", targetScore: 40, spawnBase: 580,  upTimeTruck: 780,  upTimeStar: 950,  dinoChance: 0.54, starChance: 0.05, doubleSpawnChance: 0.65 }
+];
+function getLevel(id) { return LEVELS.find(l => l.id === id) || LEVELS[0]; }
+
+/* ---- Reward catalogs (coins only, no real money) ---- */
+const TRUCK_STYLES = [
+  { id: "classic",      name: "Classic Trucks", price: 0,  preview: "🛻", emojis: ["🛻","🚚","🚙","🚜"] },
+  { id: "construction", name: "Builder Crew",   price: 20, preview: "🚛", emojis: ["🚛","🚒","🚓","🚐"] },
+  { id: "racing",       name: "Speedy Racers",  price: 35, preview: "🏎️", emojis: ["🏎️","🏍️","🛺","🚕"] }
+];
+const SCENES = [
+  { id: "desert",  name: "Desert",  price: 0,  preview: "🏜️", cls: "" },
+  { id: "jungle",  name: "Jungle",  price: 15, preview: "🌴", cls: "scene-jungle" },
+  { id: "volcano", name: "Volcano", price: 30, preview: "🌋", cls: "scene-volcano" },
+  { id: "snow",    name: "Snow",    price: 30, preview: "❄️", cls: "scene-snow" }
+];
+const HORNS = [
+  { id: "basic", name: "Beep Beep",   price: 0,  preview: "🔔" },
+  { id: "truck", name: "Big Air Horn", price: 18, preview: "📯" },
+  { id: "clown", name: "Clown Honk",  price: 18, preview: "🤡" },
+  { id: "train", name: "Train Whistle", price: 25, preview: "🚂" }
+];
+const SCENE_CLASSES = SCENES.map(s => s.cls).filter(Boolean);
+
+/* ---- Power-up prices (coins) ---- */
+const POWERUP_PRICES = { slowMo: 8, extraTime: 6 };
+const SLOWMO_FACTOR = 1.8;
+const SLOWMO_MS = 10000;
+const EXTRA_TIME_SECONDS = 10;
+
 let spots = [];          // the 9 spot elements
 let score = 0;
 let timeLeft = GAME_SECONDS;
@@ -641,6 +958,31 @@ let gameTimer = null;    // 1s countdown
 let spawnTimer = null;   // popup spawner
 let activeIndexes = new Set(); // which spots currently have a popper
 let running = false;
+let currentLevel = LEVELS[0];
+let progress = LS._defaultProgress();
+let slowMoUntil = 0;     // timestamp while Slow-Mo is active
+
+function truckEmojis() {
+  const style = TRUCK_STYLES.find(t => t.id === progress.equipped.truck) || TRUCK_STYLES[0];
+  return style.emojis;
+}
+function applyScene() {
+  SCENE_CLASSES.forEach(c => document.body.classList.remove(c));
+  const scene = SCENES.find(s => s.id === progress.equipped.scene) || SCENES[0];
+  if (scene.cls) document.body.classList.add(scene.cls);
+}
+function loadProgressFor(name) {
+  progress = LS.getProgress(name);
+  applyScene();
+}
+function saveProgress() { LS.saveProgress(playerName, progress); }
+function refreshCoinDisplays() {
+  const txt = "🪙 " + progress.coins;
+  ["startCoins","levelCoins","shopCoins"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  });
+}
 
 // Build the 3x3 grid once
 function buildGrid() {
@@ -662,16 +1004,18 @@ function buildGrid() {
   }
 }
 
-function startGame() {
-  playerName = (document.getElementById("nameInput").value || "").trim() || "Player";
-  LS.setName(playerName);
-  playerLabel.textContent = "👋 " + playerName;
+function startLevel(levelId) {
+  currentLevel = getLevel(levelId);
+  applyScene();
 
   score = 0;
   timeLeft = GAME_SECONDS;
+  slowMoUntil = 0;
   scoreVal.textContent = "0";
   timeVal.textContent = String(GAME_SECONDS);
   timeVal.classList.remove("low");
+  updateLevelHud();
+  updatePowerupButtons();
   activeIndexes.clear();
 
   // clear any leftover poppers
@@ -689,7 +1033,7 @@ function startGame() {
   gameTimer = setInterval(() => {
     timeLeft--;
     timeVal.textContent = String(timeLeft);
-    if (timeLeft <= 10) timeVal.classList.add("low");
+    if (timeLeft <= 10) timeVal.classList.add("low"); else timeVal.classList.remove("low");
     if (timeLeft <= 0) endGame();
   }, 1000);
 
@@ -697,14 +1041,28 @@ function startGame() {
   scheduleSpawn(500);
 }
 
+function updateLevelHud() {
+  const el = document.getElementById("playerLabel");
+  // center hud shows the level under the player greeting
+  el.innerHTML = "👋 " + escapeHtml(playerName) + "<br><span style='font-size:13px;color:#555;'>" + currentLevel.name + "</span>";
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+}
+
+function slowFactor() {
+  return (Date.now() < slowMoUntil) ? SLOWMO_FACTOR : 1;
+}
+
 function scheduleSpawn(delay) {
   spawnTimer = setTimeout(() => {
     if (!running) return;
     spawnWave();
-    // next wave: gets a touch faster as time runs down
-    const base = 850;
+    // next wave: level base interval, getting a touch faster as time runs down
+    const base = currentLevel.spawnBase;
     const speedUp = Math.max(0, (GAME_SECONDS - timeLeft)) * 6;
-    const next = Math.max(400, base - speedUp) + Math.random() * 350;
+    let next = (Math.max(350, base - speedUp) + Math.random() * 300) * slowFactor();
     scheduleSpawn(next);
   }, delay);
 }
@@ -714,7 +1072,7 @@ function spawnWave() {
   const free = [];
   for (let i = 0; i < 9; i++) if (!activeIndexes.has(i)) free.push(i);
   if (free.length === 0) return;
-  const count = (Math.random() < 0.45 && free.length >= 2) ? 2 : 1;
+  const count = (Math.random() < currentLevel.doubleSpawnChance && free.length >= 2) ? 2 : 1;
   shuffle(free);
   for (let k = 0; k < count; k++) {
     spawnAt(free[k]);
@@ -733,8 +1091,9 @@ function spawnAt(i) {
   void s.popper.offsetWidth;
   s.popper.classList.add("up");
 
-  // stay up for ~1s (a little longer for stars so they're catchable)
-  const upTime = kind.type === "star" ? 1200 : 1000;
+  // stay up for the level's up-time (stars a bit longer so they're catchable)
+  const baseUp = kind.type === "star" ? currentLevel.upTimeStar : currentLevel.upTimeTruck;
+  const upTime = baseUp * slowFactor();
   s.timeout = setTimeout(() => {
     hidePopper(s.popper);
     activeIndexes.delete(i);
@@ -743,15 +1102,17 @@ function spawnAt(i) {
 
 function pickKind() {
   const r = Math.random();
-  // ~55% trucks, ~35% dinos, ~10% stars
-  if (r < 0.55) {
-    const trucks = ["🛻","🚚","🚙","🛻","🚜"];
-    return { type: "truck", emoji: trucks[Math.floor(Math.random()*trucks.length)], points: 1 };
-  } else if (r < 0.90) {
+  const dinoChance = currentLevel.dinoChance;
+  const starChance = currentLevel.starChance;
+  // scoring semantics unchanged: truck +1, star +3, dino -1
+  if (r < dinoChance) {
     const dinos = ["🦖","🦕"];
     return { type: "dino", emoji: dinos[Math.floor(Math.random()*dinos.length)], points: -1 };
-  } else {
+  } else if (r < dinoChance + starChance) {
     return { type: "star", emoji: "⭐", points: 3 };
+  } else {
+    const trucks = truckEmojis();
+    return { type: "truck", emoji: trucks[Math.floor(Math.random()*trucks.length)], points: 1 };
   }
 }
 
@@ -775,7 +1136,8 @@ function onTap(i, e) {
     floatText(spotEl, "+" + pts, "good");
     spotEl.classList.remove("flashgood"); void spotEl.offsetWidth; spotEl.classList.add("flashgood");
     s.popper.classList.add("tapped");
-    kind === "star" ? Sound.star() : Sound.pop();
+    if (kind === "star") { Sound.star(); }
+    else { Sound.pop(); Sound.horn(progress.equipped.horn); }
     // remove after pop animation
     clearTimeout(s.timeout);
     setTimeout(() => { activeIndexes.delete(i); hidePopper(s.popper); s.popper.classList.remove("tapped"); }, 300);
@@ -819,9 +1181,40 @@ function endGame() {
   LS.saveScore(playerName, score);
   FAMILY_SERVER.submitScore(playerName, score); // fire-and-forget
 
+  // ---- Coins & progress ----
+  const lvl = currentLevel;
+  const beatTarget = score >= lvl.targetScore;
+  let coinsEarned = Math.floor(score / 5);
+  if (beatTarget) coinsEarned += 5; // bonus for beating the target
+  progress.coins += coinsEarned;
+
+  // per-level best
+  const prevBest = progress.levelBest[lvl.id] || 0;
+  if (score > prevBest) progress.levelBest[lvl.id] = score;
+
+  // unlock next level
+  let unlockedNext = false;
+  if (beatTarget && lvl.id < LEVELS.length && progress.unlockedLevels < lvl.id + 1) {
+    progress.unlockedLevels = lvl.id + 1;
+    unlockedNext = true;
+  }
+  saveProgress();
+  refreshCoinDisplays();
+
   // End screen
   document.getElementById("endName").textContent = "🎉 Awesome, " + playerName + "!";
   document.getElementById("finalScore").textContent = String(score);
+  const endExtra = document.getElementById("endExtra");
+  if (endExtra) {
+    let msg = "🪙 +" + coinsEarned + " coins";
+    if (beatTarget) {
+      msg += unlockedNext ? " · 🔓 " + getLevel(lvl.id + 1).name + " unlocked!"
+                          : " · 🎯 Target beat!";
+    } else {
+      msg += " · 🎯 Target " + lvl.targetScore + " (keep trying!)";
+    }
+    endExtra.textContent = msg;
+  }
   showScreen("end");
   Sound.cheer();
   launchConfetti();
@@ -915,6 +1308,206 @@ function shuffle(a) {
 
 
 /* =======================================================================
+   Level select screen
+   ======================================================================= */
+const levelList = document.getElementById("levelList");
+function openLevels() {
+  captureName();
+  refreshCoinDisplays();
+  renderLevels();
+  showScreen("level");
+}
+function renderLevels() {
+  levelList.innerHTML = "";
+  LEVELS.forEach(lvl => {
+    const locked = lvl.id > progress.unlockedLevels;
+    const best = progress.levelBest[lvl.id];
+    const btn = document.createElement("button");
+    btn.className = "level-btn" + (locked ? " locked" : "");
+    btn.disabled = locked;
+    const sub = locked
+      ? "🔒 Beat " + getLevel(lvl.id - 1).name + " to unlock"
+      : "🎯 Target " + lvl.targetScore + (best != null ? " · Best " + best : "");
+    btn.innerHTML =
+      '<span class="lv-main"><span class="lv-name"></span><span class="lv-sub"></span></span>' +
+      '<span class="lv-icon">' + (locked ? "🔒" : "▶️") + '</span>';
+    btn.querySelector(".lv-name").textContent = lvl.name;
+    btn.querySelector(".lv-sub").textContent = sub;
+    if (!locked) btn.addEventListener("click", () => startLevel(lvl.id));
+    levelList.appendChild(btn);
+  });
+}
+
+
+/* =======================================================================
+   Power-ups (bought with coins, used during a round)
+   ======================================================================= */
+function updatePowerupButtons() {
+  const slow = document.getElementById("slowMoBtn");
+  const extra = document.getElementById("extraTimeBtn");
+  document.getElementById("slowMoPrice").textContent = "🪙 " + POWERUP_PRICES.slowMo;
+  document.getElementById("extraTimePrice").textContent = "🪙 " + POWERUP_PRICES.extraTime;
+  slow.disabled = !running || progress.coins < POWERUP_PRICES.slowMo || Date.now() < slowMoUntil;
+  extra.disabled = !running || progress.coins < POWERUP_PRICES.extraTime;
+}
+function buySlowMo() {
+  if (!running || progress.coins < POWERUP_PRICES.slowMo || Date.now() < slowMoUntil) return;
+  progress.coins -= POWERUP_PRICES.slowMo;
+  saveProgress();
+  refreshCoinDisplays();
+  slowMoUntil = Date.now() + SLOWMO_MS;
+  Sound.star();
+  updatePowerupButtons();
+  setTimeout(() => { updatePowerupButtons(); }, SLOWMO_MS + 50);
+}
+function buyExtraTime() {
+  if (!running || progress.coins < POWERUP_PRICES.extraTime) return;
+  progress.coins -= POWERUP_PRICES.extraTime;
+  saveProgress();
+  refreshCoinDisplays();
+  timeLeft += EXTRA_TIME_SECONDS;
+  timeVal.textContent = String(timeLeft);
+  if (timeLeft > 10) timeVal.classList.remove("low");
+  Sound.cheer();
+  updatePowerupButtons();
+}
+
+
+/* =======================================================================
+   Shop screen (buy with coins — no real money)
+   ======================================================================= */
+const shopList = document.getElementById("shopList");
+function openShop() {
+  captureName();
+  refreshCoinDisplays();
+  renderShop();
+  showScreen("shop");
+}
+function renderShop() {
+  shopList.innerHTML = "";
+  const cats = [
+    { title: "🚚 Truck Styles", items: TRUCK_STYLES, bucket: "trucks" },
+    { title: "🖼️ Scenes",       items: SCENES,       bucket: "scenes" },
+    { title: "📣 Horn Sounds",  items: HORNS,        bucket: "horns" }
+  ];
+  cats.forEach(cat => {
+    const title = document.createElement("div");
+    title.className = "shop-cat-title";
+    title.textContent = cat.title;
+    shopList.appendChild(title);
+    cat.items.forEach(item => {
+      const owned = progress.owned[cat.bucket].indexOf(item.id) !== -1;
+      const row = document.createElement("div");
+      row.className = "shop-item";
+      row.innerHTML =
+        '<span class="si-preview"></span>' +
+        '<span class="si-info"><span class="si-name"></span><span class="si-price"></span></span>' +
+        '<button></button>';
+      row.querySelector(".si-preview").textContent = item.preview;
+      row.querySelector(".si-name").textContent = item.name;
+      row.querySelector(".si-price").textContent = item.price === 0 ? "Free" : "🪙 " + item.price;
+      const btn = row.querySelector("button");
+      if (owned) {
+        btn.textContent = "Owned";
+        btn.classList.add("owned");
+        btn.disabled = true;
+      } else {
+        btn.textContent = "Buy";
+        btn.disabled = progress.coins < item.price;
+        btn.addEventListener("click", () => buyItem(cat.bucket, item));
+      }
+      shopList.appendChild(row);
+    });
+  });
+}
+function buyItem(bucket, item) {
+  if (progress.owned[bucket].indexOf(item.id) !== -1) return;
+  if (progress.coins < item.price) return;
+  progress.coins -= item.price;
+  progress.owned[bucket].push(item.id);
+  saveProgress();
+  refreshCoinDisplays();
+  if (bucket === "horns") Sound.horn(item.id);
+  renderShop();
+}
+
+
+/* =======================================================================
+   Rewards screen (equip owned items)
+   ======================================================================= */
+const rewardsList = document.getElementById("rewardsList");
+function openRewards() {
+  captureName();
+  renderRewards();
+  showScreen("rewards");
+}
+function renderRewards() {
+  rewardsList.innerHTML = "";
+  const cats = [
+    { title: "🚚 Truck Styles", items: TRUCK_STYLES, bucket: "trucks", slot: "truck" },
+    { title: "🖼️ Scenes",       items: SCENES,       bucket: "scenes", slot: "scene" },
+    { title: "📣 Horn Sounds",  items: HORNS,        bucket: "horns", slot: "horn" }
+  ];
+  cats.forEach(cat => {
+    const title = document.createElement("div");
+    title.className = "rewards-cat-title";
+    title.textContent = cat.title;
+    rewardsList.appendChild(title);
+    cat.items
+      .filter(item => progress.owned[cat.bucket].indexOf(item.id) !== -1)
+      .forEach(item => {
+        const equipped = progress.equipped[cat.slot] === item.id;
+        const row = document.createElement("div");
+        row.className = "reward-item";
+        row.innerHTML =
+          '<span class="ri-preview"></span>' +
+          '<span class="ri-info"><span class="ri-name"></span></span>' +
+          '<button></button>';
+        row.querySelector(".ri-preview").textContent = item.preview;
+        row.querySelector(".ri-name").textContent = item.name;
+        const btn = row.querySelector("button");
+        if (equipped) {
+          btn.textContent = "Equipped";
+          btn.classList.add("equipped");
+          btn.disabled = true;
+        } else {
+          btn.textContent = "Equip";
+          btn.classList.add("equip");
+          btn.addEventListener("click", () => equipItem(cat.slot, item));
+        }
+        // tapping a horn preview row (not the button) plays it
+        if (cat.slot === "horn") {
+          row.querySelector(".ri-preview").style.cursor = "pointer";
+          row.querySelector(".ri-preview").addEventListener("click", () => Sound.horn(item.id));
+        }
+        rewardsList.appendChild(row);
+      });
+  });
+}
+function equipItem(slot, item) {
+  progress.equipped[slot] = item.id;
+  saveProgress();
+  if (slot === "scene") applyScene();
+  if (slot === "horn") Sound.horn(item.id);
+  renderRewards();
+}
+
+
+/* =======================================================================
+   Name capture / player switching
+   ======================================================================= */
+function captureName() {
+  const typed = (document.getElementById("nameInput").value || "").trim() || "Player";
+  if (typed !== playerName) {
+    playerName = typed;
+    loadProgressFor(playerName);
+  }
+  LS.setName(playerName);
+  refreshCoinDisplays();
+}
+
+
+/* =======================================================================
    Sound toggle button
    ======================================================================= */
 const soundToggle = document.getElementById("soundToggle");
@@ -932,12 +1525,28 @@ soundToggle.addEventListener("click", () => {
 /* =======================================================================
    Wire up buttons
    ======================================================================= */
-document.getElementById("startBtn").addEventListener("click", startGame);
-document.getElementById("playAgainBtn").addEventListener("click", startGame);
+document.getElementById("startBtn").addEventListener("click", openLevels);
+document.getElementById("playAgainBtn").addEventListener("click", () => startLevel(currentLevel.id));
+document.getElementById("endLevelsBtn").addEventListener("click", openLevels);
+document.getElementById("levelHomeBtn").addEventListener("click", goHome);
+document.getElementById("toShopBtn").addEventListener("click", openShop);
+document.getElementById("toRewardsBtn").addEventListener("click", openRewards);
+document.getElementById("shopHomeBtn").addEventListener("click", goHome);
+document.getElementById("shopRewardsBtn").addEventListener("click", openRewards);
+document.getElementById("rewardsHomeBtn").addEventListener("click", goHome);
+document.getElementById("rewardsShopBtn").addEventListener("click", openShop);
+document.getElementById("slowMoBtn").addEventListener("click", buySlowMo);
+document.getElementById("extraTimeBtn").addEventListener("click", buyExtraTime);
 document.getElementById("toBoardBtn").addEventListener("click", openBoard);
 document.getElementById("endBoardBtn").addEventListener("click", openBoard);
-document.getElementById("boardHomeBtn").addEventListener("click", () => showScreen("start"));
-document.getElementById("endHomeBtn").addEventListener("click", () => showScreen("start"));
+document.getElementById("boardHomeBtn").addEventListener("click", goHome);
+document.getElementById("endHomeBtn").addEventListener("click", goHome);
+
+function goHome() {
+  refreshCoinDisplays();
+  applyScene();
+  showScreen("start");
+}
 
 document.getElementById("clearBoardBtn").addEventListener("click", () => {
   if (confirm("Clear the local scores on THIS device? (The family online board is not affected.)")) {
@@ -955,6 +1564,9 @@ document.getElementById("clearBoardBtn").addEventListener("click", () => {
   Sound.init();
   const saved = LS.getName();
   if (saved) document.getElementById("nameInput").value = saved;
+  playerName = saved || "Player";
+  loadProgressFor(playerName);   // loads progress + applies equipped scene
+  refreshCoinDisplays();
   showScreen("start");
 })();
 </script>
