@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Braylein's Truck &amp; Dino Tap</title>
+<style>
+  :root {
+    --sky-top: #7ec8ff;
+    --sky-bot: #ffe29a;
+    --sand: #f4c97a;
+    --dirt: #8b5a2b;
+    --dirt-dark: #6b4420;
+    --btn: #ff7b00;
+    --btn-dark: #c85f00;
+    --btn-green: #2ec234;
+    --btn-green-dark: #1f9623;
+    --btn-blue: #2f8fff;
+    --btn-blue-dark: #1f6cc8;
+    --panel: #fff6e0;
+    --ink: #3a2410;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Comic Sans MS", "Chalkboard SE", "Baloo", system-ui, sans-serif;
+    color: var(--ink);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  body {
+    background: linear-gradient(180deg, var(--sky-top) 0%, #a9ddff 45%, var(--sky-bot) 100%);
+  }
+
+  /* ---------- Animated background ---------- */
+  #bg {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .cloud {
+    position: absolute;
+    font-size: 64px;
+    opacity: 0.9;
+    animation: drift linear infinite;
+  }
+  .cloud.c1 { top: 6%;  animation-duration: 42s; }
+  .cloud.c2 { top: 16%; animation-duration: 58s; font-size: 48px; }
+  .cloud.c3 { top: 3%;  animation-duration: 70s; font-size: 80px; }
+  @keyframes drift {
+    from { transform: translateX(-20vw); }
+    to   { transform: translateX(120vw); }
+  }
+  #sun {
+    position: absolute;
+    top: 5%;
+    right: 8%;
+    font-size: 70px;
+    animation: spin 40s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #ground {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 34%;
+    background: linear-gradient(180deg, var(--sand) 0%, #e0a94f 100%);
+  }
+  .dinoshape {
+    position: absolute;
+    bottom: 2%;
+    font-size: 72px;
+    opacity: 0.45;
+    animation: sway 6s ease-in-out infinite;
+  }
+  .dinoshape.d1 { left: 4%;  }
+  .dinoshape.d2 { right: 6%; animation-delay: -3s; font-size: 60px; }
+  .cactus { position: absolute; bottom: 4%; font-size: 54px; opacity: 0.55; }
+  .cactus.x1 { left: 40%; }
+  .cactus.x2 { right: 30%; bottom: 7%; font-size: 40px; }
+  @keyframes sway {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50%     { transform: translateY(-6px) rotate(2deg); }
+  }
+
+  /* ---------- App layout ---------- */
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
+  .screen.active { display: flex; }
+
+  h1.title {
+    text-align: center;
+    font-size: 34px;
+    margin: 10px 0 4px;
+    color: #c2410c;
+    text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.12);
+    line-height: 1.1;
+  }
+  .subtitle { text-align: center; font-size: 20px; margin: 0 0 12px; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 22px;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background: var(--btn);
+    box-shadow: 0 7px 0 var(--btn-dark);
+    cursor: pointer;
+    margin: 10px 0;
+    font-family: inherit;
+  }
+  .btn:active { transform: translateY(5px); box-shadow: 0 2px 0 var(--btn-dark); }
+  .btn.green { background: var(--btn-green); box-shadow: 0 7px 0 var(--btn-green-dark); }
+  .btn.green:active { box-shadow: 0 2px 0 var(--btn-green-dark); }
+  .btn.blue { background: var(--btn-blue); box-shadow: 0 7px 0 var(--btn-blue-dark); }
+  .btn.blue:active { box-shadow: 0 2px 0 var(--btn-blue-dark); }
+  .btn.small { font-size: 20px; padding: 14px; }
+  .btn.red { background: #e2443b; box-shadow: 0 7px 0 #a82b24; }
+  .btn.red:active { box-shadow: 0 2px 0 #a82b24; }
+
+  /* ---------- Name input ---------- */
+  .field-label { font-size: 20px; margin: 6px 0; text-align: center; }
+  #nameInput {
+    width: 100%;
+    font-size: 24px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 4px solid var(--btn);
+    text-align: center;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fffdf7;
+  }
+  #nameInput:focus { outline: none; border-color: var(--btn-green); }
+
+  .panel {
+    background: var(--panel);
+    border-radius: 22px;
+    padding: 16px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+  }
+  .spacer { flex: 1; }
+
+  /* ---------- Game HUD ---------- */
+  #hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .hud-box {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 8px 14px;
+    font-size: 22px;
+    font-weight: bold;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+    text-align: center;
+  }
+  #timeBox { font-size: 30px; color: #c2410c; min-width: 86px; }
+  #timeBox.warn { color: #e2443b; animation: pulse 0.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.12);} }
+  #scoreBox { min-width: 86px; }
+  #soundToggle {
+    font-size: 26px;
+    background: var(--panel);
+    border: none;
+    border-radius: 16px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+    cursor: pointer;
+  }
+  #soundToggle:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.12); }
+
+  /* ---------- Grid ---------- */
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    align-content: center;
+  }
+  .mound {
+    position: relative;
+    background: radial-gradient(ellipse at 50% 35%, var(--dirt) 0%, var(--dirt-dark) 75%);
+    border-radius: 50% 50% 45% 45%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 -8px 0 rgba(0,0,0,0.25), 0 5px 0 rgba(0,0,0,0.18);
+    overflow: hidden;
+  }
+  .mound::after {
+    content: "";
+    position: absolute;
+    bottom: 10%;
+    width: 60%;
+    height: 10%;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.18);
+  }
+  .critter {
+    font-size: 15vw;
+    max-font-size: 70px;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    animation: popin 0.22s ease-out;
+    z-index: 2;
+  }
+  @media (min-width: 420px) { .critter { font-size: 62px; } }
+  @keyframes popin {
+    0%   { transform: translateY(60%) scale(0.3); opacity: 0; }
+    70%  { transform: translateY(-10%) scale(1.15); opacity: 1; }
+    100% { transform: translateY(0) scale(1); }
+  }
+  .critter.shake { animation: shake 0.45s ease-in-out; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0) rotate(0); }
+    20% { transform: translateX(-7px) rotate(-8deg); }
+    40% { transform: translateX(7px) rotate(8deg); }
+    60% { transform: translateX(-6px) rotate(-6deg); }
+    80% { transform: translateX(6px) rotate(6deg); }
+  }
+  .critter.celebrate { animation: celebrate 0.5s ease-out; }
+  @keyframes celebrate {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.5) rotate(-12deg); }
+    70% { transform: scale(1.3) rotate(12deg); }
+    100% { transform: scale(0) rotate(0); opacity: 0; }
+  }
+  .critter.burst { animation: burst 0.5s ease-out; }
+  @keyframes burst {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.7); filter: brightness(1.6); }
+    100% { transform: scale(0); opacity: 0; }
+  }
+  .floater {
+    position: absolute;
+    font-size: 26px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 5;
+    animation: floatup 0.8s ease-out forwards;
+    text-shadow: 1px 1px 0 #fff;
+  }
+  .floater.plus { color: #1f9623; }
+  .floater.minus { color: #e2443b; }
+  .floater.star { color: #e8a200; }
+  @keyframes floatup {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-60px); opacity: 0; }
+  }
+
+  /* ---------- End screen ---------- */
+  .big-score {
+    text-align: center;
+    font-size: 72px;
+    color: #c2410c;
+    margin: 6px 0;
+    text-shadow: 2px 2px 0 #fff;
+  }
+  .end-emoji { text-align: center; font-size: 56px; margin: 4px; }
+
+  /* ---------- Leaderboard ---------- */
+  #boardList { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+  #boardList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: #fffdf7;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 19px;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+  }
+  #boardList li .rank { font-weight: bold; color: #c2410c; min-width: 30px; }
+  #boardList li .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0 8px; }
+  #boardList li .sc { font-weight: bold; min-width: 44px; text-align: right; }
+  #boardList li .dt { font-size: 14px; opacity: 0.7; min-width: 70px; text-align: right; }
+  .board-src { text-align: center; font-size: 17px; margin: 2px 0 10px; opacity: 0.85; }
+  .empty-note { text-align: center; font-size: 19px; padding: 20px; }
+
+  /* ---------- Confetti ---------- */
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+  .confetti-piece {
+    position: absolute;
+    top: -40px;
+    font-size: 28px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.9; }
+  }
+</style>
+</head>
+<body>
+
+<div id="bg" aria-hidden="true">
+  <div id="sun">☀️</div>
+  <div class="cloud c1">☁️</div>
+  <div class="cloud c2">☁️</div>
+  <div class="cloud c3">⛅</div>
+  <div id="ground"></div>
+  <div class="dinoshape d1">🦕</div>
+  <div class="dinoshape d2">🦖</div>
+  <div class="cactus x1">🌵</div>
+  <div class="cactus x2">🌵</div>
+</div>
+
+<div id="app">
+
+  <!-- ===== START SCREEN ===== -->
+  <section id="startScreen" class="screen active">
+    <h1 class="title">🛻 Braylein's<br>Truck &amp; Dino Tap 🦖</h1>
+    <p class="subtitle">Tap the trucks! Wave to the dinos! 🦕</p>
+    <div class="panel">
+      <div class="field-label">What's your name?</div>
+      <input id="nameInput" type="text" maxlength="14" placeholder="Type your name!" autocomplete="off">
+    </div>
+    <div class="spacer"></div>
+    <button id="playBtn" class="btn green">▶️ Play!</button>
+    <button id="boardBtnStart" class="btn blue">🏆 Leaderboard</button>
+  </section>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <section id="gameScreen" class="screen">
+    <div id="hud">
+      <div class="hud-box" id="timeBox">⏱️ 60</div>
+      <div class="hud-box" id="scoreBox">⭐ 0</div>
+      <button id="soundToggle" title="Sound on/off">🔊</button>
+    </div>
+    <div id="grid"></div>
+  </section>
+
+  <!-- ===== END SCREEN ===== -->
+  <section id="endScreen" class="screen">
+    <h1 class="title">⏰ Time's Up!</h1>
+    <div class="end-emoji">🎉🏁🎉</div>
+    <div class="panel">
+      <div class="field-label">Your score</div>
+      <div class="big-score" id="finalScore">0</div>
+      <div class="field-label" id="endName"></div>
+    </div>
+    <div class="spacer"></div>
+    <button id="playAgainBtn" class="btn green">🔁 Play Again!</button>
+    <button id="boardBtnEnd" class="btn blue">🏆 Leaderboard</button>
+  </section>
+
+  <!-- ===== LEADERBOARD SCREEN ===== -->
+  <section id="boardScreen" class="screen">
+    <h1 class="title">🏆 Leaderboard</h1>
+    <div class="board-src" id="boardSrc">Top 10 Scores</div>
+    <ul id="boardList"></ul>
+    <button id="clearBoardBtn" class="btn red small">🗑️ Clear board</button>
+    <button id="boardBackBtn" class="btn small">⬅️ Back</button>
+  </section>
+
+</div>
+
+<div id="confetti" aria-hidden="true"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Braylein's Truck & Dino Tap
+   Single-file offline game. Vanilla JS, no dependencies.
+   ============================================================ */
+
+// ---------- Constants ----------
+var ROUND_SECONDS = 60;
+var TRUCKS = ["\uD83D\uDED1", "\uD83D\uDE9A", "\uD83D\uDE99"]; // pickup, truck, suv-ish
+var DINOS  = ["\uD83E\uDD96", "\uD83E\uDD95"]; // T-rex, sauropod
+var STAR   = "\u2B50";
+var GAME_ID = "braylein-truck-dino";
+
+var LS_NAME   = "btdt_name";
+var LS_SCORES = "btdt_scores";
+var LS_SOUND  = "btdt_sound";
+
+// ---------- State ----------
+var state = {
+  score: 0,
+  timeLeft: ROUND_SECONDS,
+  playing: false,
+  soundOn: true,
+  playerName: "Friend"
+};
+var timers = { countdown: null, spawn: null, popTimeouts: [] };
+
+// ---------- Element refs ----------
+var el = {
+  screens: {
+    start: document.getElementById("startScreen"),
+    game: document.getElementById("gameScreen"),
+    end: document.getElementById("endScreen"),
+    board: document.getElementById("boardScreen")
+  },
+  nameInput: document.getElementById("nameInput"),
+  playBtn: document.getElementById("playBtn"),
+  boardBtnStart: document.getElementById("boardBtnStart"),
+  grid: document.getElementById("grid"),
+  timeBox: document.getElementById("timeBox"),
+  scoreBox: document.getElementById("scoreBox"),
+  soundToggle: document.getElementById("soundToggle"),
+  finalScore: document.getElementById("finalScore"),
+  endName: document.getElementById("endName"),
+  playAgainBtn: document.getElementById("playAgainBtn"),
+  boardBtnEnd: document.getElementById("boardBtnEnd"),
+  boardSrc: document.getElementById("boardSrc"),
+  boardList: document.getElementById("boardList"),
+  clearBoardBtn: document.getElementById("clearBoardBtn"),
+  boardBackBtn: document.getElementById("boardBackBtn"),
+  confetti: document.getElementById("confetti")
+};
+
+// ---------- Screen management ----------
+function showScreen(name) {
+  var keys = Object.keys(el.screens);
+  for (var i = 0; i < keys.length; i++) {
+    el.screens[keys[i]].classList.remove("active");
+  }
+  el.screens[name].classList.add("active");
+}
+
+// ---------- Safe localStorage ----------
+function lsGet(key) {
+  try { return window.localStorage.getItem(key); } catch (e) { return null; }
+}
+function lsSet(key, val) {
+  try { window.localStorage.setItem(key, val); } catch (e) {}
+}
+function lsRemove(key) {
+  try { window.localStorage.removeItem(key); } catch (e) {}
+}
+
+// ---------- Name handling ----------
+function loadName() {
+  var saved = lsGet(LS_NAME);
+  if (saved) {
+    el.nameInput.value = saved;
+    state.playerName = saved;
+  }
+}
+function saveName() {
+  var n = el.nameInput.value.trim();
+  if (n) {
+    state.playerName = n;
+    lsSet(LS_NAME, n);
+  }
+}
+
+// ---------- Audio (WebAudio, synthesized only) ----------
+var audioCtx = null;
+function ensureAudio() {
+  try {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) { audioCtx = new AC(); }
+    }
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  } catch (e) { audioCtx = null; }
+}
+function playTone(freqStart, freqEnd, duration, type, gainPeak) {
+  if (!state.soundOn || !audioCtx) { return; }
+  try {
+    var now = audioCtx.currentTime;
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freqStart, now);
+    if (freqEnd && freqEnd !== freqStart) {
+      osc.frequency.exponentialRampToValueAtTime(Math.max(1, freqEnd), now + duration);
+    }
+    var peak = (typeof gainPeak === "number") ? gainPeak : 0.18;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(peak, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.05);
+  } catch (e) {}
+}
+function sfxPop()  { playTone(520, 900, 0.14, "square", 0.16); }
+function sfxCheer() {
+  // Happy little arpeggio for the star.
+  playTone(660, 660, 0.12, "triangle", 0.16);
+  setTimeout(function () { playTone(880, 880, 0.12, "triangle", 0.16); }, 90);
+  setTimeout(function () { playTone(1175, 1175, 0.18, "triangle", 0.16); }, 180);
+}
+function sfxDino() { playTone(300, 160, 0.3, "sine", 0.14); }
+
+function updateSoundUI() {
+  el.soundToggle.textContent = state.soundOn ? "\uD83D\uDD0A" : "\uD83D\uDD07";
+}
+function toggleSound() {
+  state.soundOn = !state.soundOn;
+  lsSet(LS_SOUND, state.soundOn ? "1" : "0");
+  updateSoundUI();
+  if (state.soundOn) { ensureAudio(); sfxPop(); }
+}
+function loadSoundPref() {
+  var s = lsGet(LS_SOUND);
+  state.soundOn = (s === null) ? true : (s === "1");
+  updateSoundUI();
+}
+
+// ---------- Grid build ----------
+var mounds = [];
+function buildGrid() {
+  el.grid.innerHTML = "";
+  mounds = [];
+  for (var i = 0; i < 9; i++) {
+    var m = document.createElement("div");
+    m.className = "mound";
+    m.dataset.index = String(i);
+    el.grid.appendChild(m);
+    mounds.push({ node: m, occupied: false, critter: null, timeout: null });
+  }
+}
+
+// ---------- Scoring feedback ----------
+function showFloater(moundNode, text, cls) {
+  var f = document.createElement("div");
+  f.className = "floater " + cls;
+  f.textContent = text;
+  moundNode.appendChild(f);
+  setTimeout(function () {
+    if (f.parentNode) { f.parentNode.removeChild(f); }
+  }, 800);
+}
+function setScore(val) {
+  state.score = Math.max(0, val);
+  el.scoreBox.textContent = "\u2B50 " + state.score;
+}
+
+// ---------- Pop-up spawning ----------
+function pickType() {
+  var r = Math.random();
+  // ~15% star, ~30% dino, ~55% truck
+  if (r < 0.15) { return { kind: "star", emoji: STAR }; }
+  if (r < 0.45) { return { kind: "dino", emoji: DINOS[Math.floor(Math.random() * DINOS.length)] }; }
+  return { kind: "truck", emoji: TRUCKS[Math.floor(Math.random() * TRUCKS.length)] };
+}
+
+function freeMounds() {
+  var free = [];
+  for (var i = 0; i < mounds.length; i++) {
+    if (!mounds[i].occupied) { free.push(i); }
+  }
+  return free;
+}
+
+function clearMound(idx) {
+  var m = mounds[idx];
+  if (!m) { return; }
+  if (m.timeout) { clearTimeout(m.timeout); m.timeout = null; }
+  if (m.critter && m.critter.parentNode) {
+    m.critter.parentNode.removeChild(m.critter);
+  }
+  m.critter = null;
+  m.occupied = false;
+}
+
+function spawnOne() {
+  var free = freeMounds();
+  if (free.length === 0) { return; }
+  var idx = free[Math.floor(Math.random() * free.length)];
+  var m = mounds[idx];
+  var type = pickType();
+
+  var c = document.createElement("div");
+  c.className = "critter";
+  c.textContent = type.emoji;
+  c.dataset.kind = type.kind;
+  c.dataset.tapped = "0";
+
+  var onTap = function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (!state.playing) { return; }
+    if (c.dataset.tapped === "1") { return; }
+    c.dataset.tapped = "1";
+    ensureAudio();
+    handleTap(idx, type.kind, c, m.node);
+  };
+  c.addEventListener("click", onTap);
+  c.addEventListener("touchstart", onTap, { passive: false });
+
+  m.node.appendChild(c);
+  m.occupied = true;
+  m.critter = c;
+
+  // Visible for about 1 second.
+  var lifespan = 850 + Math.floor(Math.random() * 450);
+  m.timeout = setTimeout(function () {
+    // fade out if not tapped
+    if (m.critter === c && c.dataset.tapped === "0") {
+      clearMound(idx);
+    }
+  }, lifespan);
+}
+
+function handleTap(idx, kind, critterNode, moundNode) {
+  if (kind === "truck") {
+    setScore(state.score + 1);
+    showFloater(moundNode, "+1", "plus");
+    sfxPop();
+    critterNode.classList.add("celebrate");
+    var m1 = mounds[idx];
+    if (m1.timeout) { clearTimeout(m1.timeout); m1.timeout = null; }
+    setTimeout(function () { clearMound(idx); }, 480);
+  } else if (kind === "star") {
+    setScore(state.score + 3);
+    showFloater(moundNode, "+3", "star");
+    sfxCheer();
+    critterNode.classList.add("burst");
+    starBurst(moundNode);
+    var m2 = mounds[idx];
+    if (m2.timeout) { clearTimeout(m2.timeout); m2.timeout = null; }
+    setTimeout(function () { clearMound(idx); }, 480);
+  } else { // dino - a friend, costs a point
+    setScore(state.score - 1);
+    showFloater(moundNode, "-1", "minus");
+    sfxDino();
+    critterNode.classList.add("shake");
+    // allow a re-tap after shake? keep tapped=1 so no double penalty; let it ride out its lifespan
+    critterNode.dataset.tapped = "1";
+    setTimeout(function () {
+      if (mounds[idx].critter === critterNode) { clearMound(idx); }
+    }, 450);
+  }
+}
+
+function scheduleSpawn() {
+  if (!state.playing) { return; }
+  // one or two at a time
+  var count = Math.random() < 0.35 ? 2 : 1;
+  for (var i = 0; i < count; i++) { spawnOne(); }
+  var next = 500 + Math.floor(Math.random() * 450);
+  timers.spawn = setTimeout(scheduleSpawn, next);
+}
+
+// ---------- Star burst on mound ----------
+function starBurst(moundNode) {
+  for (var i = 0; i < 6; i++) {
+    (function (i) {
+      var s = document.createElement("div");
+      s.className = "floater star";
+      s.textContent = Math.random() < 0.5 ? "\u2B50" : "\u2728";
+      s.style.left = (30 + Math.random() * 40) + "%";
+      moundNode.appendChild(s);
+      setTimeout(function () { if (s.parentNode) { s.parentNode.removeChild(s); } }, 800);
+    })(i);
+  }
+}
+
+// ---------- Timer / round ----------
+function startRound() {
+  saveName();
+  ensureAudio();
+  setScore(0);
+  state.timeLeft = ROUND_SECONDS;
+  state.playing = true;
+  el.timeBox.textContent = "\u23F1\uFE0F " + state.timeLeft;
+  el.timeBox.classList.remove("warn");
+  buildGrid();
+  showScreen("game");
+
+  timers.countdown = setInterval(function () {
+    state.timeLeft--;
+    el.timeBox.textContent = "\u23F1\uFE0F " + state.timeLeft;
+    if (state.timeLeft <= 10) { el.timeBox.classList.add("warn"); }
+    if (state.timeLeft <= 0) { endRound(); }
+  }, 1000);
+
+  scheduleSpawn();
+}
+
+function stopTimers() {
+  if (timers.countdown) { clearInterval(timers.countdown); timers.countdown = null; }
+  if (timers.spawn) { clearTimeout(timers.spawn); timers.spawn = null; }
+  for (var i = 0; i < mounds.length; i++) { clearMound(i); }
+}
+
+function endRound() {
+  state.playing = false;
+  stopTimers();
+
+  var finalScore = state.score;
+  var name = state.playerName || "Friend";
+
+  // persist locally
+  saveLocalScore(name, finalScore);
+
+  // fire-and-forget remote submit (never blocks gameplay)
+  postScoreToServer(name, finalScore);
+
+  el.finalScore.textContent = String(finalScore);
+  el.endName.textContent = "Great job, " + name + "! " + encourage(finalScore);
+  showScreen("end");
+  launchConfetti();
+  if (state.soundOn) { sfxCheer(); }
+}
+
+function encourage(score) {
+  if (score >= 40) { return "\uD83C\uDFC6 Amazing!"; }
+  if (score >= 20) { return "\uD83D\uDE80 Super!"; }
+  if (score >= 10) { return "\uD83D\uDC4D Nice!"; }
+  return "\uD83D\uDE0A Fun!";
+}
+
+// ---------- Confetti ----------
+function launchConfetti() {
+  var pieces = ["\uD83C\uDF89", "\u2B50", "\uD83C\uDF8A", "\u2728", "\uD83C\uDFC1", "\uD83D\uDED1"];
+  for (var i = 0; i < 40; i++) {
+    (function () {
+      var p = document.createElement("div");
+      p.className = "confetti-piece";
+      p.textContent = pieces[Math.floor(Math.random() * pieces.length)];
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.animationDuration = (1.8 + Math.random() * 1.8) + "s";
+      p.style.animationDelay = (Math.random() * 0.5) + "s";
+      p.style.fontSize = (20 + Math.random() * 20) + "px";
+      el.confetti.appendChild(p);
+      setTimeout(function () { if (p.parentNode) { p.parentNode.removeChild(p); } }, 4000);
+    })();
+  }
+}
+
+// ---------- Local leaderboard ----------
+function loadLocalScores() {
+  var raw = lsGet(LS_SCORES);
+  if (!raw) { return []; }
+  try {
+    var arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) { return []; }
+}
+function saveLocalScore(name, score) {
+  var arr = loadLocalScores();
+  arr.push({ name: name, score: score, date: todayStr() });
+  arr.sort(function (a, b) { return (b.score || 0) - (a.score || 0); });
+  arr = arr.slice(0, 50); // keep a few extra; show top 10
+  lsSet(LS_SCORES, JSON.stringify(arr));
+}
+function todayStr() {
+  var d = new Date();
+  var mm = String(d.getMonth() + 1).padStart(2, "0");
+  var dd = String(d.getDate()).padStart(2, "0");
+  return d.getFullYear() + "-" + mm + "-" + dd;
+}
+
+function renderBoard(entries, sourceLabel) {
+  el.boardSrc.textContent = sourceLabel;
+  el.boardList.innerHTML = "";
+  var top = entries.slice()
+    .sort(function (a, b) { return (b.score || 0) - (a.score || 0); })
+    .slice(0, 10);
+  if (top.length === 0) {
+    var li = document.createElement("li");
+    li.className = "empty-note";
+    li.textContent = "No scores yet. Go play! \uD83D\uDED1";
+    el.boardList.appendChild(li);
+    return;
+  }
+  for (var i = 0; i < top.length; i++) {
+    var e = top[i];
+    var row = document.createElement("li");
+
+    var rank = document.createElement("span");
+    rank.className = "rank";
+    rank.textContent = medal(i);
+
+    var nm = document.createElement("span");
+    nm.className = "nm";
+    nm.textContent = e.name || "Friend";
+
+    var sc = document.createElement("span");
+    sc.className = "sc";
+    sc.textContent = "\u2B50 " + (e.score || 0);
+
+    var dt = document.createElement("span");
+    dt.className = "dt";
+    dt.textContent = e.date || "";
+
+    row.appendChild(rank);
+    row.appendChild(nm);
+    row.appendChild(sc);
+    row.appendChild(dt);
+    el.boardList.appendChild(row);
+  }
+}
+function medal(i) {
+  if (i === 0) { return "\uD83E\uDD47"; }
+  if (i === 1) { return "\uD83E\uDD48"; }
+  if (i === 2) { return "\uD83E\uDD49"; }
+  return "#" + (i + 1);
+}
+
+// Clear board with two-tap confirm.
+var clearArmed = false;
+var clearTimer = null;
+function handleClearBoard() {
+  if (!clearArmed) {
+    clearArmed = true;
+    el.clearBoardBtn.textContent = "\u26A0\uFE0F Tap again to clear!";
+    clearTimer = setTimeout(resetClearButton, 3000);
+    return;
+  }
+  // confirmed
+  if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
+  lsRemove(LS_SCORES);
+  resetClearButton();
+  renderBoard([], "Top 10 Scores (local)");
+}
+function resetClearButton() {
+  clearArmed = false;
+  el.clearBoardBtn.textContent = "\uD83D\uDDD1\uFE0F Clear board";
+  if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
+}
+
+// Open the leaderboard: show local immediately, then try server.
+function openBoard() {
+  resetClearButton();
+  renderBoard(loadLocalScores(), "Top 10 Scores (local)");
+  showScreen("board");
+  loadServerBoard();
+}
+
+/* ============================================================
+   FAMILY SCORES SERVER
+   Shared online board for the family. Fully optional:
+   - POST each finished score (fire-and-forget, never blocks play).
+   - GET the shared board to display when available.
+   Any failure or timeout falls back silently to the local board.
+   ============================================================ */
+var FAMILY_SERVER_URL = "https://games.cardcauldrontcg.com/scores";
+var FAMILY_KEY = "family-games-2026";
+var FAMILY_TIMEOUT_MS = 2500;
+
+function postScoreToServer(name, score) {
+  // Fire-and-forget. Wrapped so nothing here can break the game.
+  try {
+    if (typeof fetch !== "function") { return; }
+    var controller = new AbortController();
+    var t = setTimeout(function () { controller.abort(); }, FAMILY_TIMEOUT_MS);
+    fetch(FAMILY_SERVER_URL, {
+      method: "POST",
+      headers: {
+        "X-Family-Key": FAMILY_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ game: GAME_ID, name: name, score: score }),
+      signal: controller.signal
+    }).then(function () {
+      clearTimeout(t);
+    })["catch"](function () {
+      clearTimeout(t);
+      // silent: local board already has this score
+    });
+  } catch (e) {
+    // silent
+  }
+}
+
+function loadServerBoard() {
+  try {
+    if (typeof fetch !== "function") { return; }
+    var controller = new AbortController();
+    var t = setTimeout(function () { controller.abort(); }, FAMILY_TIMEOUT_MS);
+    var url = FAMILY_SERVER_URL + "?game=" + encodeURIComponent(GAME_ID);
+    fetch(url, {
+      method: "GET",
+      headers: { "X-Family-Key": FAMILY_KEY },
+      signal: controller.signal
+    }).then(function (res) {
+      clearTimeout(t);
+      if (!res || !res.ok) { throw new Error("bad response"); }
+      return res.json();
+    }).then(function (data) {
+      var entries = normalizeServerEntries(data);
+      if (entries && entries.length) {
+        // only show server board if we are still on the board screen
+        if (el.screens.board.classList.contains("active")) {
+          renderBoard(entries, "\uD83C\uDF10 Family board (online)");
+        }
+      }
+    })["catch"](function () {
+      clearTimeout(t);
+      // silent fallback: local board already rendered
+    });
+  } catch (e) {
+    // silent fallback
+  }
+}
+
+function normalizeServerEntries(data) {
+  var list = null;
+  if (Array.isArray(data)) { list = data; }
+  else if (data && Array.isArray(data.scores)) { list = data.scores; }
+  else if (data && Array.isArray(data.entries)) { list = data.entries; }
+  if (!list) { return []; }
+  var out = [];
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i] || {};
+    out.push({
+      name: item.name || "Friend",
+      score: Number(item.score) || 0,
+      date: item.date || ""
+    });
+  }
+  return out;
+}
+/* ============ end of family server section ============ */
+
+// ---------- Wire up events ----------
+el.playBtn.addEventListener("click", function () { ensureAudio(); saveName(); startRound(); });
+el.playAgainBtn.addEventListener("click", function () { ensureAudio(); startRound(); });
+el.boardBtnStart.addEventListener("click", function () { saveName(); openBoard(); });
+el.boardBtnEnd.addEventListener("click", function () { openBoard(); });
+el.boardBackBtn.addEventListener("click", function () {
+  // go back to start if not mid-game; end screen otherwise
+  resetClearButton();
+  showScreen(state.playing ? "game" : "start");
+});
+el.clearBoardBtn.addEventListener("click", handleClearBoard);
+el.soundToggle.addEventListener("click", function () { ensureAudio(); toggleSound(); });
+el.nameInput.addEventListener("input", saveName);
+el.nameInput.addEventListener("change", saveName);
+
+// Resume audio on first gesture anywhere.
+document.addEventListener("touchstart", ensureAudio, { once: true, passive: true });
+document.addEventListener("mousedown", ensureAudio, { once: true });
+
+// ---------- Init ----------
+loadName();
+loadSoundPref();
+buildGrid();
+showScreen("start");
+</script>
+</body>
+</html>
